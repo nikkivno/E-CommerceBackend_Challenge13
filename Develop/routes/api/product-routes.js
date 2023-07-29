@@ -37,16 +37,16 @@ try {
 
 // create new product
 router.post('/', async (req, res) => {
-    {
-      product_name: "Basketball",
-      price: 200.00,
-      stock: 3,
-      tagIds: [1, 2, 3, 4]
-    }
+    // {
+    //   product_name: "Basketball",
+    //   price: 200.00,
+    //   stock: 3,
+    //   category_id: [1, 2, 3, 4]
+    // }
   Product.create(req.body)
     .then((product) => {
       // if there's product tags, we need to create pairings to bulk create in the ProductTag model
-      if (req.body.tagIds.length) {
+      if (req.body.tagIds && req.body.tagIds.length) {
         const productTagIdArr = req.body.tagIds.map((tag_id) => {
           return {
             product_id: product.id,
@@ -110,8 +110,22 @@ router.put('/:id', (req, res) => {
     });
 });
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id', async (req, res) => {
   // delete one product by its `id` value
+  try {
+    const product = await Product.destroy({
+      where: {
+        id: req.params.id,
+      },
+    });
+    if (!product) {
+      res.status(404).json ({message: 'There is no product that matches this description'});
+      return;
+    }
+    res.status(200).json(product);
+  }catch (err){
+    res.status(500).json(err);
+  }
 });
 
 module.exports = router;
