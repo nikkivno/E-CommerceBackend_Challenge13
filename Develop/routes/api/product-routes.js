@@ -8,7 +8,7 @@ router.get('/', async (req, res) => {
   // find all products
   // be sure to include its associated Category and Tag data
 try {
-  const products = await Product.findAll();
+  const products = await Product.findAll({include: Category, Tag});
   if (!products) {
     res.status(404).json({message: 'There are no products matching this description'});
     return;
@@ -24,7 +24,7 @@ router.get('/:id', async (req, res) => {
   // find a single product by its `id`
   // be sure to include its associated Category and Tag data
 try {
-  const product = await Product.findByPk(req.params.id);
+  const product = await Product.findByPk(req.params.id, {include: Category, Tag});
   if (!product) {
     res.status(404).json({message: 'There is no product that matches this description'});
     return;
